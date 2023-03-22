@@ -1,31 +1,32 @@
 import * as yaml from 'js-yaml'
 
-type terminalStatus = {
+export type TerminalStatus = {
   availableReplicas: number
   domain?: string
 }
 
-type TerminalForm = {
-  username: string
+export type TerminalForm = {
+  user_name: string
   token: string
   namespace: string
   currentTime: string
+  terminal_name: string
 }
 
 // this template is suite for golang(kubernetes and sealos)'s template engine
-const generateTerminalTemplate = (form: TerminalForm) => {
+export const generateTerminalTemplate = (form: TerminalForm): string => {
   const temp = {
     apiVersion: 'terminal.sealos.io/v1',
     kind: 'Terminal',
     metadata: {
-      name: `terminal-${form.username}`,
+      name: form.terminal_name,
       namespace: form.namespace,
       annotations: {
         lastUpdateTime: form.currentTime,
       },
     },
     spec: {
-      user: form.username,
+      user: form.user_name,
       token: form.token,
       apiServer: 'https://kubernetes.default.svc.cluster.local:443',
       ttyImage: 'hub.sealos.cn/labring/terminal-app:1.19.4',
@@ -38,6 +39,6 @@ const generateTerminalTemplate = (form: TerminalForm) => {
     const result = yaml.dump(temp)
     return result
   } catch (error) {
-    return null
+    return ''
   }
 }
