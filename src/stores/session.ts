@@ -3,7 +3,7 @@ import { sessionKey } from '@/interfaces/session'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-const yaml = require('js-yaml')
+import * as yaml from 'js-yaml'
 
 type SessionState = {
   session: Session
@@ -35,6 +35,7 @@ const useSessionStore = create<SessionState>()(
           return ''
         }
         const doc = yaml.load(get().session.kubeconfig)
+        //@ts-ignore
         return doc?.users[0]?.user?.token
       },
     })),

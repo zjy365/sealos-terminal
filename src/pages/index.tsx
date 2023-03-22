@@ -1,12 +1,17 @@
 import useSessionStore from '@/stores/session'
 import { useEffect, useState } from 'react'
-import { sealosApp } from 'sealos-desktop-sdk/app'
+import { createSealosApp, sealosApp } from 'sealos-desktop-sdk/app'
 import styles from './index.module.scss'
+import request from '@/service/request'
 
 export default function Index() {
   const { setSession, getSession } = useSessionStore()
   const [isLodaing, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
+
+  useEffect(() => {
+    return createSealosApp()
+  }, [])
 
   useEffect(() => {
     const initApp = async () => {
@@ -23,6 +28,13 @@ export default function Index() {
     }
     initApp()
   }, [isLodaing, setSession])
+
+  useEffect(() => {
+    const test = async () => {
+      console.log(await request('/api/apply'))
+    }
+    test()
+  }, [])
 
   return <div className={styles.container}>index</div>
 }
