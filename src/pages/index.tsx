@@ -47,7 +47,7 @@ export default function Index() {
     return <div className={clsx(styles.loading, styles.err)}>loading</div>
   }
 
-  if (!isUserLogin() && process.env.NODE_ENV !== 'development') {
+  if (isError) {
     return (
       <div className={styles.err}>
         please go to &nbsp;<a href="https://cloud.sealos.io/">sealos</a>
