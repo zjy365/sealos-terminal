@@ -23,17 +23,24 @@ export default function Index() {
     initApp()
   }, [setSession])
 
-  const { data } = useQuery(['applyApp'], () => request.post('/api/apply'), {
-    onSuccess: (data) => {
-      if (data?.data?.code === 200) {
-        setUrl(data?.data?.data)
-      }
-    },
-    onError: (err) => {
-      console.log(err, 'err')
-    },
-    retry: 3,
-  })
+  const { data, refetch } = useQuery(
+    ['applyApp'],
+    () => request.post('/api/apply'),
+    {
+      onSuccess: (data) => {
+        if (data?.data?.code === 200) {
+          setUrl(data?.data?.data)
+        }
+        if (data?.data?.code === 201) {
+          refetch()
+        }
+      },
+      onError: (err) => {
+        console.log(err, 'err')
+      },
+      retry: 3,
+    }
+  )
 
   return (
     <div className={styles.container}>
