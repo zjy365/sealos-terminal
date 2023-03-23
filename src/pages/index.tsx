@@ -40,6 +40,7 @@ export default function Index() {
         console.log(err, 'err')
       },
       retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * attemptIndex, 2000),
     }
   )
 
