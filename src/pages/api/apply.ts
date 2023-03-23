@@ -57,7 +57,7 @@ export default async function handler(
         }
       }
     } catch (error) {
-      console.log(error)
+      // console.log(error)
     }
 
     const terminal_yaml = generateTerminalTemplate({
@@ -70,7 +70,7 @@ export default async function handler(
     const result = await ApplyYaml(kc, terminal_yaml)
     jsonRes(res, { code: 201, data: result, message: '' })
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     jsonRes(res, { code: 500, error })
   }
 }

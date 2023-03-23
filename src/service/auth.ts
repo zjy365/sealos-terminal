@@ -6,7 +6,7 @@ export const authSession = async (header: IncomingHttpHeaders) => {
       return Promise.reject('缺少凭证')
     }
 
-    const kubeconfig = JSON.parse(decodeURIComponent(header.authorization))
+    const kubeconfig = decodeURIComponent(header.authorization)
     return Promise.resolve(kubeconfig)
   } catch (err) {
     return Promise.reject('凭证错误')

@@ -1,13 +1,13 @@
+import request from '@/service/request'
 import useSessionStore from '@/stores/session'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { createSealosApp, sealosApp } from 'sealos-desktop-sdk/app'
 import styles from './index.module.scss'
-import request from '@/service/request'
 
 export default function Index() {
-  const { setSession, getSession } = useSessionStore()
-  const [isLodaing, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
+  const { setSession } = useSessionStore()
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
     return createSealosApp()
@@ -18,23 +18,32 @@ export default function Index() {
       try {
         const result = await sealosApp.getUserInfo()
         setSession(result)
-        setIsLoading(false)
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          setIsLoading(false)
-        }
-        setIsError(true)
-      }
+      } catch (error) {}
     }
     initApp()
-  }, [isLodaing, setSession])
+  }, [setSession])
 
-  useEffect(() => {
-    const test = async () => {
-      console.log(await request('/api/apply'))
-    }
-    test()
-  }, [])
+  const { data } = useQuery(['applyApp'], () => request.post('/api/apply'), {
+    onSuccess: (data) => {
+      if (data?.data?.code === 200) {
+        setUrl(data?.data?.data)
+      }
+    },
+    onError: (err) => {
+      console.log(err, 'err')
+    },
+    retry: 3,
+  })
 
-  return <div className={styles.container}>index</div>
+  return (
+    <div className={styles.container}>
+      {!!url && (
+        <iframe
+          src={url}
+          allow="camera;microphone;clipboard-write;"
+          className={styles.iframeWrap}
+        />
+      )}
+    </div>
+  )
 }

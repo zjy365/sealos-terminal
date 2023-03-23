@@ -25,7 +25,9 @@ request.interceptors.request.use(
     }
 
     if (process.env.NODE_ENV === 'development') {
-      _headers['Authorization'] = process.env.NEXT_PUBLIC_MOCK_KUBECONFIG || ''
+      _headers['Authorization'] = encodeURIComponent(
+        process.env.NEXT_PUBLIC_MOCK_KUBECONFIG || ''
+      )
     }
 
     if (!config.headers || config.headers['Content-Type'] === '') {
@@ -44,7 +46,13 @@ request.interceptors.request.use(
 
 // response interceptor
 request.interceptors.response.use(
-  (response: AxiosResponse<ApiResp>) => response,
+  (response: AxiosResponse<ApiResp>) => {
+    const data = response.data as ApiResp
+    if (!data.code || data.code < 200 || data.code > 300) {
+      return Promise.reject(response)
+    }
+    return response
+  },
   (error) => {
     if (!error) {
       return Promise.reject({ message: '未知错误' })
