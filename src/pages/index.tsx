@@ -1,12 +1,13 @@
 import request from '@/service/request'
 import useSessionStore from '@/stores/session'
 import { useQuery } from '@tanstack/react-query'
+import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { createSealosApp, sealosApp } from 'sealos-desktop-sdk/app'
 import styles from './index.module.scss'
 
 export default function Index() {
-  const { setSession } = useSessionStore()
+  const { setSession, isUserLogin } = useSessionStore()
   const [url, setUrl] = useState('')
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function Index() {
     initApp()
   }, [setSession])
 
-  const { data, refetch } = useQuery(
+  const { data, isLoading, isError, refetch } = useQuery(
     ['applyApp'],
     () => request.post('/api/apply'),
     {
@@ -41,6 +42,18 @@ export default function Index() {
       retry: 3,
     }
   )
+
+  if (isLoading) {
+    return <div className={clsx(styles.loading, styles.err)}>loading</div>
+  }
+
+  if (!isUserLogin() && process.env.NODE_ENV !== 'development') {
+    return (
+      <div className={styles.err}>
+        please go to &nbsp;<a href="https://cloud.sealos.io/">sealos</a>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
