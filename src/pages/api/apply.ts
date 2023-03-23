@@ -49,11 +49,7 @@ export default async function handler(
         const terminalStatus = terminalUserDesc.body.status as TerminalStatus
         if (terminalStatus.availableReplicas > 0) {
           // temporarily add domain scheme
-          let domain = terminalStatus.domain || ''
-          if (!domain.startsWith('https://')) {
-            domain = 'https://' + domain
-          }
-          return jsonRes(res, { data: domain })
+          return jsonRes(res, { data: terminalStatus.domain || '' })
         }
       }
     } catch (error) {

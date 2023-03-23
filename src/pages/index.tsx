@@ -28,19 +28,25 @@ export default function Index() {
     ['applyApp'],
     () => request.post('/api/apply'),
     {
-      onSuccess: (data) => {
-        if (data?.data?.code === 200) {
-          setUrl(data?.data?.data)
+      onSuccess: (res) => {
+        if (res?.data?.code === 200 && res?.data?.data) {
+          const url = res?.data?.data
+          fetch(url, { mode: 'no-cors' })
+            .then(() => {
+              setUrl(url)
+              window.location.replace(url)
+            })
+            .catch(() => false)
         }
-        if (data?.data?.code === 201) {
+        if (res?.data?.code === 201) {
           refetch()
         }
       },
       onError: (err) => {
         console.log(err, 'err')
       },
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * attemptIndex, 2000),
+      refetchInterval: url === '' ? 1000 : false,
+      enabled: url === '',
     }
   )
 
