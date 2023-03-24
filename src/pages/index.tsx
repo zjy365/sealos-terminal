@@ -36,7 +36,7 @@ export default function Index() {
               setUrl(url)
               window.location.replace(url)
             })
-            .catch(() => false)
+            .catch((err) => console.log(err))
         }
         if (res?.data?.code === 201) {
           refetch()
@@ -54,7 +54,7 @@ export default function Index() {
     return <div className={clsx(styles.loading, styles.err)}>loading</div>
   }
 
-  if (isError) {
+  if (!isUserLogin && isError) {
     return (
       <div className={styles.err}>
         please go to &nbsp;<a href="https://cloud.sealos.io/">sealos</a>
