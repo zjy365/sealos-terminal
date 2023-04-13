@@ -1,3 +1,4 @@
+import Terminal from '@/components/terminal'
 import request from '@/service/request'
 import useSessionStore from '@/stores/session'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +9,7 @@ import styles from './index.module.scss'
 
 export default function Index() {
   const { setSession, isUserLogin } = useSessionStore()
+
   const [url, setUrl] = useState('')
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function Index() {
           fetch(url, { mode: 'no-cors' })
             .then(() => {
               setUrl(url)
-              window.location.replace(url)
+              // window.location.replace(url)
             })
             .catch((err) => console.log(err))
         }
@@ -45,8 +47,8 @@ export default function Index() {
       onError: (err) => {
         console.log(err, 'err')
       },
-      refetchInterval: url === '' ? 1000 : false,
-      enabled: url === '',
+      retry: 6,
+      retryDelay: 1500,
     }
   )
 
@@ -54,23 +56,28 @@ export default function Index() {
     return <div className={clsx(styles.loading, styles.err)}>loading</div>
   }
 
-  if (!isUserLogin && isError) {
+  if (!isUserLogin() && process.env.NODE_ENV === 'production') {
+    const tempUrl = process.env.SITE
+      ? process.env.SITE
+      : 'https://cloud.sealos.io/'
+
     return (
       <div className={styles.err}>
-        please go to &nbsp;<a href="https://cloud.sealos.io/">sealos</a>
+        please go to &nbsp;<a href={tempUrl}>{tempUrl}</a>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.err}>
+        There is an error on the page, try to refresh or contact the
+        administrator
       </div>
     )
   }
 
   return (
-    <div className={styles.container}>
-      {!!url && (
-        <iframe
-          src={url}
-          allow="camera;microphone;clipboard-write;"
-          className={styles.iframeWrap}
-        />
-      )}
-    </div>
+    <div className={styles.container}>{!!url && <Terminal url={url} />}</div>
   )
 }
