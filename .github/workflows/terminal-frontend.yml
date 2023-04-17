@@ -1,12 +1,11 @@
-name: dockerize-web
+name: Terminal-Frontend
 
 on:
   push:
-    tags:
-      - '*'
+    branches: ['main']
 
 jobs:
-  dockerize-web:
+  terminal-frontend:
     runs-on: ubuntu-20.04
     permissions:
       packages: write
@@ -21,7 +20,6 @@ jobs:
         with:
           images: |
             ghcr.io/${{ github.repository_owner }}/terminal-frontend
-          # https://github.com/docker/metadata-action#typesemver
           tags: |
             type=raw,value=latest,enable=true
             type=sha,enable=true,format=short

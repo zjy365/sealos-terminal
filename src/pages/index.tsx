@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { createSealosApp, sealosApp } from 'sealos-desktop-sdk/app'
 import styles from './index.module.scss'
 
-export default function Index() {
+export default function Index({ envSite }: { envSite: string }) {
   const { setSession, isUserLogin } = useSessionStore()
 
   const [url, setUrl] = useState('')
@@ -57,9 +57,7 @@ export default function Index() {
   }
 
   if (!isUserLogin() && process.env.NODE_ENV === 'production') {
-    const tempUrl = process.env.SITE
-      ? process.env.SITE
-      : 'https://cloud.sealos.io/'
+    const tempUrl = envSite
 
     return (
       <div className={styles.err}>
@@ -67,17 +65,8 @@ export default function Index() {
       </div>
     )
   }
+}
 
-  if (isError) {
-    return (
-      <div className={styles.err}>
-        There is an error on the page, try to refresh or contact the
-        administrator
-      </div>
-    )
-  }
-
-  return (
-    <div className={styles.container}>{!!url && <Terminal url={url} />}</div>
-  )
+export async function getServerSideProps() {
+  return { props: { envSite: process.env.SITE } }
 }
