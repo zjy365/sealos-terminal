@@ -65,6 +65,19 @@ export default function Index({ envSite }: { envSite: string }) {
       </div>
     )
   }
+
+  if (isError) {
+    return (
+      <div className={styles.err}>
+        There is an error on the page, try to refresh or contact the
+        administrator
+      </div>
+    )
+  }
+
+  return (
+    <div className={styles.container}>{!!url && <Terminal url={url} />}</div>
+  )
 }
 
 export async function getServerSideProps() {

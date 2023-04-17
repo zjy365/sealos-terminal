@@ -10,43 +10,58 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './index.module.scss'
 import { nanoid } from 'nanoid'
 import { debounce } from 'lodash'
 
 type Terminal = {
   id: string
-  label: string
-  content: string
   command?: string
 }
 
 function Terminal({ url }: { url: string }) {
-  const id = nanoid(6)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [tabId, setTabId] = useState(id)
+  const [tabId, setTabId] = useState(nanoid(6))
+
   const [tabContents, setTabContents] = useState<Terminal[]>([
     {
-      id: id,
-      label: `terminal-${id}`,
-      content: url,
+      id: tabId,
     },
   ])
 
-  const newTerminal = () => {
-    let temp = nanoid(6)
+  useEffect(() => {
+    try {
+      window.addEventListener('message', (e) => {
+        if (e.data.type === 'new terminal' && e.data.command) {
+          newTerminal(e.data.command)
+        }
+      })
+    } catch (error) {}
+  }, [])
+
+  const onLoadIframe = (e: any, item: Terminal) => {
+    try {
+      if (item.command) {
+        setTimeout(() => {
+          e.target.contentWindow.postMessage({ command: item.command }, '*')
+        }, 2000)
+      }
+    } catch (error) {}
+  }
+
+  const newTerminal = (command?: string) => {
+    const temp = nanoid(6)
     setTabContents((pre) => {
-      setTabId(temp)
       return [
         ...pre,
         {
           id: temp,
-          label: `terminal-${temp}`,
-          content: url,
+          command: command,
         },
       ]
     })
+    setTabId(temp)
   }
 
   const deleteTerminal = (key: string) => {
@@ -75,7 +90,7 @@ function Terminal({ url }: { url: string }) {
           alignItems={'center'}
           textAlign="left"
           borderBottom={'2px solid #232528'}
-          onClick={debounce(newTerminal, 1000)}>
+          onClick={debounce(() => newTerminal(), 500)}>
           Add a Terminal
         </Flex>
         <Box overflowX={'hidden'} overflowY="auto" pb="20px">
@@ -85,19 +100,19 @@ function Terminal({ url }: { url: string }) {
                 py="12px"
                 pl="16px"
                 pr="18px"
-                bg={item.id === tabId ? '#232528' : ''}
-                key={item.id}
+                bg={item?.id === tabId ? '#232528' : ''}
+                key={item?.id}
                 alignItems="center"
                 justifyContent="space-between"
-                onClick={() => onTabChange(item.id)}
+                onClick={() => onTabChange(item?.id)}
                 className={styles.tabs}
-                data-isactive={item.id === tabId}>
+                data-isactive={item?.id === tabId}>
                 <Text isTruncated color="#FFFFFF">
-                  {item.label}
+                  {`terminal-${item?.id}`}
                 </Text>
                 <Box
                   className={styles.closeIcon}
-                  onClick={() => deleteTerminal(item.id)}>
+                  onClick={() => deleteTerminal(item?.id)}>
                   <Iconfont
                     iconName="icon-notion-cancel"
                     color="#c5c5c5"
@@ -125,12 +140,13 @@ function Terminal({ url }: { url: string }) {
         return (
           <Box
             flexGrow={1}
-            key={item.id}
-            display={item.id === tabId ? 'block' : 'none'}>
+            key={item?.id}
+            display={item?.id === tabId ? 'block' : 'none'}>
             <iframe
+              onLoad={(e) => onLoadIframe(e, item)}
               className={styles.iframeWindow}
               id={tabId}
-              src={item.content}
+              src={url}
               allow="camera;microphone;clipboard-write;"
             />
           </Box>
