@@ -37,7 +37,9 @@ function Terminal({ url }: { url: string }) {
           newTerminal(e.data.command)
         }
       })
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   }, [])
 
   const onLoadIframe = (e: any, item: Terminal) => {
@@ -47,7 +49,9 @@ function Terminal({ url }: { url: string }) {
           e.target.contentWindow.postMessage({ command: item.command }, '*')
         }, 2000)
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const newTerminal = (command?: string) => {
