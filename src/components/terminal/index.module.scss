@@ -24,11 +24,13 @@
 
 .containerLeft {
   width: 200px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 @media (max-width: 768px) {
   .containerLeft {
-    width: 100px;
+    width: 136px;
     font-size: 12px;
   }
 }

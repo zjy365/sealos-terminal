@@ -84,6 +84,8 @@ function Terminal({ url }: { url: string }) {
   return (
     <Flex w="100%" h="100%" color="white" bg="#2b2b2b" overflow={'hidden'}>
       <Flex
+        backgroundColor={'#2C3035'}
+        userSelect={'none'}
         flexDirection={'column'}
         cursor={'pointer'}
         className={styles.containerLeft}>
@@ -92,10 +94,17 @@ function Terminal({ url }: { url: string }) {
           h="50px"
           pl="16px"
           alignItems={'center'}
-          textAlign="left"
           borderBottom={'2px solid #232528'}
           onClick={debounce(() => newTerminal(), 500)}>
-          Add a Terminal
+          <Iconfont
+            color="rgba(255, 255, 255, 0.9)"
+            iconName="icon-a-material-symbols_addadd1"
+            width={16}
+            height={16}
+          />
+          <Text color="rgba(255, 255, 255, 0.9)" pl={'8px'} isTruncated>
+            Add a Terminal
+          </Text>
         </Flex>
         <Box overflowX={'hidden'} overflowY="auto" pb="20px">
           {tabContents?.map((item: Terminal, index: number) => {
@@ -103,25 +112,30 @@ function Terminal({ url }: { url: string }) {
               <Flex
                 py="12px"
                 pl="16px"
-                pr="18px"
+                pr="12px"
                 bg={item?.id === tabId ? '#232528' : ''}
                 key={item?.id}
                 alignItems="center"
-                justifyContent="space-between"
                 onClick={() => onTabChange(item?.id)}
                 className={styles.tabs}
                 data-isactive={item?.id === tabId}>
-                <Text isTruncated color="#FFFFFF">
-                  {`terminal-${item?.id}`}
+                <Iconfont
+                  iconName="icon-codicon_terminalterminal"
+                  color="rgba(255, 255, 255, 0.9)"
+                  width={14}
+                  height={14}></Iconfont>
+                <Text isTruncated color="rgba(255, 255, 255, 0.9)" pl="8px">
+                  {`terminal ${index + 1}`}
                 </Text>
                 <Box
+                  ml="auto"
                   className={styles.closeIcon}
                   onClick={() => deleteTerminal(item?.id)}>
                   <Iconfont
-                    iconName="icon-notion-cancel"
-                    color="#c5c5c5"
-                    width={16}
-                    height={16}></Iconfont>
+                    iconName="icon-delete"
+                    color="rgba(255, 255, 255, 0.9)"
+                    width={14}
+                    height={14}></Iconfont>
                 </Box>
               </Flex>
             )
